@@ -12,9 +12,6 @@ namespace Assets.Scripts.SaveSystem
             test = SaveSystem<Test>.Instance;
             node = SaveSystem<Node>.Instance;
 
-            //test.DeleteAllSavings();
-            //node.DeleteAllSavings();
-
             Test t = new Test() {x = 10, y = 10};
             Test a = new Test() {x = 31, y = 31};
 
@@ -41,8 +38,16 @@ namespace Assets.Scripts.SaveSystem
 
             Debug.Log(c.pos);
             Debug.Log(d.pos);
+        }
 
-            Debug.Log(Savings.Instance.ReadableSavings.Count);
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Test a = new Test() {x = 99, y = 99};
+
+                test.SaveData(a,"RunTimeTest");
+            }
         }
 
         private void OnDestroy()

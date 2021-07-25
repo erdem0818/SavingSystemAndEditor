@@ -2,7 +2,7 @@
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.Scripts.Utils
+namespace Assets.Scripts.EditorUtils
 {
     public class EditorUtils : MonoBehaviour
     {
@@ -15,8 +15,8 @@ namespace Assets.Scripts.Utils
             Debug.Log("deleted");
         }
 
-        [MenuItem("Utils/DeleteAll")]
-        private static void DeleteAllSavings()
+        [MenuItem("Utils/DeleteAllSavings")]
+        public static void DeleteAllSavings()
         {
             OnSavingsDelete?.Invoke();
             Debug.Log("deleted");
