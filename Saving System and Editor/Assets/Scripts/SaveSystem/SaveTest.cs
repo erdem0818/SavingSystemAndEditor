@@ -4,13 +4,13 @@ namespace Assets.Scripts.SaveSystem
 {
     public class SaveTest : MonoBehaviour
     {
-        private SaveSystem<Test> test;
-        private SaveSystem<Node> node;
+        private SaveSystem<Test> _test;
+        private SaveSystem<Node> _node;
 
         private void Awake()
         {
-            test = SaveSystem<Test>.Instance;
-            node = SaveSystem<Node>.Instance;
+            _test = SaveSystem<Test>.Instance;
+            _node = SaveSystem<Node>.Instance;
 
             Test t = new Test() {x = 10, y = 10};
             Test a = new Test() {x = 31, y = 31};
@@ -18,20 +18,20 @@ namespace Assets.Scripts.SaveSystem
             Node c = new Node() {pos = Vector3.back};
             Node d = new Node() {pos = Vector3.forward};
                
-            test.SaveData(t,"test");
-            test.SaveData(a, "test1");
+            _test.SaveData(t,"test");
+            _test.SaveData(a, "test1");
 
-            node.SaveData(c,"node");
-            node.SaveData(d,"node1");
+            _node.SaveData(c,"node");
+            _node.SaveData(d,"node1");
         }
 
         private void Start()
         {
-            Test t = test.GetDataWithDict("test");
-            Test a = test.GetDataWithDict("test1");
+            Test t = _test.GetDataWithDict("test");
+            Test a = _test.GetDataWithDict("test1");
 
-            Node c = node.GetDataWithDict("node");
-            Node d = node.GetDataWithDict("node1");
+            Node c = _node.GetDataWithDict("node");
+            Node d = _node.GetDataWithDict("node1");
 
             Debug.Log($"{t.x} , {t.y}");
             Debug.Log($"{a.x} , {a.y}");
@@ -46,14 +46,14 @@ namespace Assets.Scripts.SaveSystem
             {
                 Test a = new Test() {x = 99, y = 99};
 
-                test.SaveData(a,"RunTimeTest");
+                _test.SaveData(a,"RunTimeTest");
             }
         }
 
         private void OnDestroy()
         {
-            test.Destroy();
-            node.Destroy();
+            _test.Destroy();
+            _node.Destroy();
         }
     }
 

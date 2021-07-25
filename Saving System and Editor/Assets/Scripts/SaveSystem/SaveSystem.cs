@@ -9,21 +9,21 @@ namespace Assets.Scripts.SaveSystem
         public static Savings Instance { get; } = new Savings();
         private Savings() { }
 
-        private readonly Dictionary<string, string> ReadableSavings = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _readableSavings = new Dictionary<string, string>();
 
         public void AddToDictionary(string saveName, string data)
         {
-            ReadableSavings.Add(saveName,data);
+            _readableSavings.Add(saveName,data);
         }
 
         public void ClearDictionary()
         {
-            ReadableSavings.Clear();
+            _readableSavings.Clear();
         }
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            return ReadableSavings.GetEnumerator();
+            return _readableSavings.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -65,13 +65,12 @@ namespace Assets.Scripts.SaveSystem
             _savingsAsString.Add(saveName, dataString);
 
             //**************
-            //Savings.Instance.ReadableSavings.Add(saveName, GetDataWithDict(saveName).ToString());
             Savings.Instance.AddToDictionary(saveName,GetDataWithDict(saveName).ToString());
         }
 
         public T GetDataWithDict(string saveName)
         {
-            T data = null;
+            T data;
 
             if (HasKey(saveName))
                 data = _savingDictionary[saveName];
