@@ -1,25 +1,18 @@
-﻿using System;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
+using Assets.Scripts.SaveSystem;
 
 namespace Assets.Scripts.EditorUtils
 {
     public class EditorUtils : MonoBehaviour
     {
-        public static event Action OnSavingsDelete;
-
-        [ContextMenu(nameof(DeleteAllPrefs))]
-        public void DeleteAllPrefs()
-        {
-            PlayerPrefs.DeleteAll();
-            Debug.Log("deleted");
-        }
-
         [MenuItem("Utils/DeleteAllSavings")]
         public static void DeleteAllSavings()
         {
-            OnSavingsDelete?.Invoke();
-            Debug.Log("deleted");
+            //OnSavingsDelete?.Invoke();
+            SaveSystem.SaveSystem.DeleteAllSavings();
+            Savings.ClearDictionary();
+            Debug.Log("deleted static");
         }
     }
 }

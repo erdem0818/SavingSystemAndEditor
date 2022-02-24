@@ -22,16 +22,7 @@ namespace Assets.Scripts.Editor
         private void ShowSavings()
         {
             GUILayout.Label("Savings", EditorStyles.boldLabel);
-
-
-            /*foreach (var e in Savings.Instance)
-            {
-                var key = $"Key: {e.Key}";
-                var value = $"Value: {e.Value}";
-                EditorGUILayout.TextField(key, value);
-            }*/
-
-
+            
             foreach (var (key, value) in from e in Savings.Instance
                 let key = $"Key: {e.Key}"
                 let value = $"Value: {e.Value}"

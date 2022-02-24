@@ -1,103 +1,91 @@
-﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Assets.Scripts.SaveSystem
 {
-    public class Savings : IEnumerable<KeyValuePair<string,string>>
+    public class SaveSystem
     {
-        public static Savings Instance { get; } = new Savings();
-        private Savings() { }
+        private SaveSystem(){}
 
-        private readonly Dictionary<string, string> _readableSavings = new Dictionary<string, string>();
+        //public static event System.Action<string, string> OnKeyAdded;
+        //public static event System.Action<string> OnKeyRemoved;
 
-        public void AddToDictionary(string saveName, string data)
+        private static readonly Dictionary<string, string> _savings = new Dictionary<string, string>();
+
+        public static void SaveData<T>(T data, string key)
         {
-            _readableSavings.Add(saveName,data);
-        }
+            if(HasSaving(key))
+            {
+                #if UNITY_EDITOR
+                Debug.LogWarning("The key you wanted to add is already exists - this key's value is overwritten");
+                #endif
+                DeleteSaving(key);
 
-        public void ClearDictionary()
+                WriteData(data, key);
+                return;
+            }
+            WriteData(data, key); 
+            //?PlayerPrefs.Save();
+        }
+        private static void WriteData<T>(T data, string key)
         {
-            _readableSavings.Clear();
+            string serializedData = JsonUtility.ToJson(data);
+            PlayerPrefs.SetString(key, serializedData);
+
+            _savings.Add(key, serializedData);
+            //OnKeyAdded?.Invoke(key, serializedData);  
+            Savings.AddToDictionary(key, serializedData);
         }
-
-        public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
-        {
-            return _readableSavings.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-    public class SaveSystem<T> where T : class , new() 
-    {
-        public static SaveSystem<T> Instance { get; } = new SaveSystem<T>();
-
-        private SaveSystem()
-        {
-            EditorUtils.EditorUtils.OnSavingsDelete += DeleteAllSavings;
-        }
-
-        public void Destroy()
-        {
-            Debug.Log("disposed");
-            EditorUtils.EditorUtils.OnSavingsDelete -= DeleteAllSavings;
-        }
-
-        private readonly Dictionary<string, T> _savingDictionary  = new Dictionary<string, T>();
-        private readonly Dictionary<string, string> _savingsAsString  = new Dictionary<string, string>();
-
-        public void SaveData(T data, string saveName)
-        {
-            PlayerPrefs.SetString(saveName, JsonUtility.ToJson(data));
-            
-            _savingDictionary.Add(saveName, data);
-            AddValueAsStringToDictionary(saveName);
-
-            PlayerPrefs.Save();
-        }
-
-        private void AddValueAsStringToDictionary(string saveName)
-        {
-            var dataString = PlayerPrefs.GetString(saveName);
-            _savingsAsString.Add(saveName, dataString);
-
-            //**************
-            Savings.Instance.AddToDictionary(saveName,GetDataWithDict(saveName).ToString());
-        }
-
-        public T GetDataWithDict(string saveName)
+        public static T GetOrCreateData<T>(string key) where T : new()
         {
             T data;
-
-            if (HasKey(saveName))
-                data = _savingDictionary[saveName];
-            else
+            if(HasSaving(key))
             {
-                data = new T();
-                SaveData(data,saveName);
+                data = GetExistingData<T>(key);
+                return data;
             }
+
+            data = new T();
+            WriteData(data, key);
             return data;
         }
-
-        public bool HasKey(string saveName)
+        private static T GetExistingData<T>(string key) where T : new()
         {
-            return _savingDictionary.ContainsKey(saveName);
+            string valueString = _savings[key];
+            T data = JsonUtility.FromJson<T>(valueString);
+            return data;
         }
-
-        public string GetDataStringByKey(string saveName)
+        public static bool HasSaving(string key)
         {
-            return !HasKey(saveName) ? string.Empty : _savingsAsString[saveName];
+           if(_savings.ContainsKey(key)) return true;
+           return false;
         }
-
-        public void DeleteAllSavings()
+        ///<summary>
+        /// Deletes all saves
+        ///</summary>
+        public static void DeleteAllSavings()
         {
-            _savingsAsString.Clear();
-            _savingDictionary.Clear();
-            Savings.Instance.ClearDictionary();
+            _savings.Clear();
             PlayerPrefs.DeleteAll();
+            //todo OnKeyRemoved invoke for all keys
+        }
+        ///<summary>
+        /// Deletes the save of given key.
+        ///</summary>
+        public static void DeleteSaving(string key)
+        {
+           if(HasSaving(key))
+           {
+               _savings.Remove(key);
+               PlayerPrefs.DeleteKey(key);
+               Savings.RemoveFromDictionary(key);
+               //OnKeyRemoved?.Invoke(key);
+               return;
+           }
+
+           #if UNITY_EDITOR
+           Debug.LogWarning("The key you entered does not exist.");
+           #endif
         }
     }
 }
