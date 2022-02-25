@@ -25,7 +25,7 @@ namespace Assets.Scripts.Editor
             
             foreach (var (key, value) in from e in Savings.Instance
                 let key = $"Key: {e.Key}"
-                let value = $"Value: {e.Value}"
+                let value = $"Value: {e.Value.ToString()}"
                 select (key, value))
             {
                 EditorGUILayout.TextField(key, value);

@@ -87,7 +87,7 @@ namespace Assets.Scripts.SaveSystem
 
         public override string ToString()
         {
-            return $"{x}, {y}";
+            return $"x:{x}, y:{y}";
         }
     }
 
